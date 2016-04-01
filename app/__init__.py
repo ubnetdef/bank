@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -34,10 +34,19 @@ def install_secret_key(app, filename='secret_key'):
 if not app.config['DEBUG']:
 	install_secret_key(app)
 
-@app.errorhandler(404)
-def not_found(error):
-	return 'Unknown request'
+#########################
+# Utility function to    #
+# return a JSON Response #
+##########################
+def respond(message, data={}, code=200):
+	response = {
+		'code': code,
+		'message': message
+	}
 
-@app.route('/')
-def home():
-	return 'Hello, World!'
+	if data:
+		response.update(data)
+
+	return jsonify(response)
+
+from app.views import main, user, transaction
