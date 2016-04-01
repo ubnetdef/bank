@@ -9,6 +9,8 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
+from app import models
+
 ########################
 # Configure Secret Key #
 ########################
