@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from app import app, scheduler
 
-from app import app
-app.run(debug=True)
+scheduler.start()
+app.run()

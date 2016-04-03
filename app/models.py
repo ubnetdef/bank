@@ -6,12 +6,12 @@ class User(db.Model):
 	__tablename__ = 'users'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(255))
+	username = db.Column(db.String(255), unique=True)
 	password = db.Column(db.String(255))
 	enabled = db.Column(db.Boolean)
 
-	def __init__(self, name, password, enabled=True):
-		self.name = name
+	def __init__(self, username, password, enabled=True):
+		self.username = username
 		self.password = password
 		self.enabled = enabled
 
@@ -19,13 +19,19 @@ class Session(db.Model):
 	__tablename__ = 'sessions'
 
 	id = db.Column(db.Integer, primary_key=True)
-	session = db.Column(db.String(255), unique=True)
+
+	""" Allow a user to have many sessions """
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+	user = db.relationship('User', 
+		backref=db.backref('sessions', lazy='dynamic'))
+
+	session = db.Column(db.String(100), unique=True)
 	time = db.Column(db.DateTime)
 	ip = db.Column(db.String(15))
 
-	def __init__(self, id, session, ip=None):
-		self.id = id
+	def __init__(self, session, user, ip=None):
 		self.session = session
+		self.user = user
 		self.ip = ip
 		self.time = datetime.utcnow()
 
@@ -42,7 +48,7 @@ class Account(db.Model):
 	balance = db.Column(db.Float)
 	pin = db.Column(db.Integer)
 
-	def __init__(self, id, user, balance=0.0, pin=0000):
+	def __init__(self, id, user, balance=0.00, pin=0000):
 		self.id = id
 		self.user = user
 		self.balance = balance

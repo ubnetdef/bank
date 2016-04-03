@@ -2,7 +2,7 @@ from app import app, respond
 
 @app.errorhandler(404)
 def error_404(error):
-	return respond("Unknown request", 404), 404
+	return respond("Unknown request", code=404), 404
 
 @app.route('/')
 def index():
