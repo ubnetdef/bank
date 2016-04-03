@@ -9,13 +9,13 @@ def transfer():
 	then add it to the "logs" table
 	"""
 	try:
-		check_params(request, ["session", "account","dest","amount","pin"])
+		check_params(request, ["session", "src","dst","amount","pin"])
 		user = validate_session(request.form["session"])
 	except StandardError as e:
 		return respond(str(e), code=400), 400
 
-	srcAccNum = str(request.form["account"])
-	dstAccNum = str(request.form["dest"])
+	srcAccNum = str(request.form["src"])
+	dstAccNum = str(request.form["dst"])
 	amount = float(request.form["amount"])
 	pin = int(request.form["pin"])
 
@@ -34,8 +34,8 @@ def transfer():
 			return respond("You do not have enough money to transfer %.2f" % (amount), code=400), 400
 
 		# Now get the dst account
-		dstAccount = Account.query.filter(Account.id == dstAccountNum)
-		if not dstAmount:
+		dstAccount = Account.query.filter(Account.id == dstAccNum).first()
+		if not dstAccount:
 			return respond("Unknown or invalid destination account number", code=400), 400
 
 		# Now update!
@@ -47,7 +47,7 @@ def transfer():
 		except:
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
-		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': srcAccount.id, 'balance': srcAccount.balance})
+		return respond("Transfered %.2f to %s" % (amount, dstAccNum), data={'account': srcAccount.id, 'balance': srcAccount.balance})
 
 @app.route('/giveMoney', methods=['POST'])
 def giveMoney():
@@ -70,8 +70,8 @@ def giveMoney():
 
 	with lock:
 		# Grab the dst account
-		dstAccount = Account.query.filter(Account.id == dstAccountNum)
-		if not dstAmount:
+		dstAccount = Account.query.filter(Account.id == dstAccountNum).first()
+		if not dstAccount:
 			return respond("Unknown or invalid destination account number", code=400), 400
 
 		# Update the balance!
@@ -82,7 +82,7 @@ def giveMoney():
 		except:
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
-		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': srcAccount.balance})
+		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
 
 @app.route('/transfers', methods=['POST'])
 def transfers():

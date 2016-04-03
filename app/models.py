@@ -11,10 +11,11 @@ class User(db.Model):
 	enabled = db.Column(db.Boolean)
 	is_staff = db.Column(db.Boolean)
 
-	def __init__(self, username, password, enabled=True):
+	def __init__(self, username, password, is_staff=False, enabled=True):
 		self.username = username
 		self.password = password
 		self.enabled = enabled
+		self.is_staff = is_staff
 
 class Session(db.Model):
 	__tablename__ = 'sessions'
