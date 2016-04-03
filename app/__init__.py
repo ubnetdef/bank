@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask import Flask, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bcrypt import Bcrypt
+from threading import Lock
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -13,6 +14,9 @@ app.config.from_object('config')
 # Setup extensions
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
+
+# Setup lock
+lock = Lock()
 
 # Setup scheduler
 scheduler = BackgroundScheduler()
