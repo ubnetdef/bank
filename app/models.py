@@ -9,6 +9,7 @@ class User(db.Model):
 	username = db.Column(db.String(255), unique=True)
 	password = db.Column(db.String(255))
 	enabled = db.Column(db.Boolean)
+	is_staff = db.Column(db.Boolean)
 
 	def __init__(self, username, password, enabled=True):
 		self.username = username
