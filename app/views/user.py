@@ -103,12 +103,16 @@ def balance():
 		return respond(str(e), code=400), 400
 
 	accountNum = str(request.form["account"])
-	account = Account.query.filter(Account.user == user, Account.id == accountNum).first()
+	account = Account.query.filter(Account.id == accountNum).first()
 
-	if not account:
+	if (account.user is not user and not user.is_staff) or (not account):
 		return respond("Unknown or invalid account number", code=400), 400
 
-	add_log(LOG_ACCOUNT, "Balance for account %s requested by %s" % (account.id, user.username))
+	maybeSlack = False
+	if user.is_staff and account.user is not user:
+		maybeSlack = True
+
+	add_log(LOG_ACCOUNT, "Balance for account #%s requested by %s" % (account.id, user.username), slack=maybeSlack)
 
 	return respond("Account %s balance is $%.2f" % (account.id, account.balance), data={'balance': account.balance})
 
@@ -156,9 +160,9 @@ def changePin():
 
 	accountNum = str(request.form["account"])
 	pin = int(request.form["pin"])
-	account = Account.query.filter(Account.user == user, Account.id == accountNum).first()
+	account = Account.query.filter(Account.id == accountNum).first()
 
-	if not account:
+	if (account.user is not user and not user.is_staff) or (not account):
 		return respond("Unknown or invalid account number", code=400), 400
 
 	account.pin = pin
@@ -166,10 +170,10 @@ def changePin():
 	try:
 		db.session.commit()
 
-		add_log(LOG_ACCOUNT, "User %s changed account %s PIN" % (user.username, accountNum))
+		add_log(LOG_ACCOUNT, "User %s changed account #%s PIN" % (user.username, accountNum), slack=True)
 	except:
 		db.session.rollback()
-		
+
 		return respond("An internal error has occured. Please try again.", code=400), 400
 
-	return respond("PIN for Account %s sucessfully changed!" % (account.id), data={'account': account.id, 'pin': account.pin})
+	return respond("PIN for Account #%s sucessfully changed!" % (account.id), data={'account': account.id, 'pin': account.pin})

@@ -71,7 +71,7 @@ def validate_session(session):
 # Utility function to    #
 # add a log message      #
 ##########################
-def add_log(logType, message, extra={}):
+def add_log(logType, message, extra={}, slack=False):
 	data = {
 		'message': message
 	}
@@ -84,6 +84,9 @@ def add_log(logType, message, extra={}):
 	try:
 		db.session.add(log)
 		db.session.commit()
+
+		if slack:
+			send_slack(message, extra)
 	except Exception as e:
 		print e
 

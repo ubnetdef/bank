@@ -1,6 +1,6 @@
 from flask import request
 from sqlalchemy import or_
-from app import add_log, app, db, lock, respond, check_params, validate_session, send_slack
+from app import add_log, app, db, lock, respond, check_params, validate_session
 from app.constants import *
 from app.models import *
 
@@ -51,8 +51,7 @@ def transfer():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "User %s transferred $%.2f from #%s to #%s" % (user.username, amount, srcAccNum, dstAccNum))
-			send_slack("User %s just transferred $%.2f from #%s to #%s" % (user.username, amount, srcAccNum, dstAccNum))
+			add_log(LOG_TRANSACTION, "User %s transferred $%.2f from #%s to #%s" % (user.username, amount, srcAccNum, dstAccNum), slack=True)
 		except:
 			db.session.rollback()
 
@@ -96,12 +95,9 @@ def giveMoney():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s" % (user.username, amount, dstAccNum))
-			send_slack("User %s just gave $%.2f to #%s" % (user.username, amount, dstAccNum))
-		except Exception as e:
+			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s" % (user.username, amount, dstAccNum), slack=True)
+		except:
 			db.session.rollback()
-
-			print "EXCEPTION: %s" % (e)
 
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
