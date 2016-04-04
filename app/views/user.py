@@ -1,5 +1,6 @@
 from flask import request
-from app import app, db, bcrypt, respond, check_params, validate_session
+from app import add_log, app, db, bcrypt, respond, check_params, validate_session
+from app.constants import *
 from app.models import *
 from os import urandom
 from random import SystemRandom
@@ -23,6 +24,8 @@ def register():
 	try:
 		db.session.add(newaccount)
 		db.session.commit()
+
+		add_log(LOG_USER, "User %s created" % (username))
 	except:
 		return respond("A user with that username already exists", code=400), 400
 
@@ -52,7 +55,11 @@ def login():
 	try:
 		db.session.add(session)
 		db.session.commit()
+
+		add_log(LOG_SESSION, "User %s logged in" % (username))
 	except:
+		db.session.rollback()
+
 		return respond("Internal server error has occured", code=101), 500
 
 	return respond("Welcome %s!" % (user.username), data={'session': session.session})
@@ -78,6 +85,8 @@ def accounts():
 			'balance': account.balance
 		})
 
+	add_log(LOG_ACCOUNT, "User %s requested for all his/her account list" % (user.username))
+
 	return respond("You currently have %d accounts with the Federal Reserve." % (len(accounts)), data={'accounts': accounts})
 
 @app.route('/balance', methods=['POST'])
@@ -98,6 +107,8 @@ def balance():
 
 	if not account:
 		return respond("Unknown or invalid account number", code=400), 400
+
+	add_log(LOG_ACCOUNT, "Balance for account %s requested by %s" % (account.id, user.username))
 
 	return respond("Account %s balance is $%.2f" % (account.id, account.balance), data={'balance': account.balance})
 
@@ -121,7 +132,11 @@ def newAccount():
 	try:
 		db.session.add(newaccount)
 		db.session.commit()
+
+		add_log(LOG_ACCOUNT, "User %s created a new account (%s)" % (user.username, accnum))
 	except:
+		db.session.rollback()
+
 		return respond("An internal error has occured. Please try again.", code=400), 400
 
 	return respond("Account created!", data={'account': newaccount.id, 'pin': newaccount.pin})
@@ -150,7 +165,11 @@ def changePin():
 
 	try:
 		db.session.commit()
+
+		add_log(LOG_ACCOUNT, "User %s changed account %s PIN" % (user.username, accountNum))
 	except:
+		db.session.rollback()
+		
 		return respond("An internal error has occured. Please try again.", code=400), 400
 
 	return respond("PIN for Account %s sucessfully changed!" % (account.id), data={'account': account.id, 'pin': account.pin})

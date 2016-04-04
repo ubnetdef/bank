@@ -1,4 +1,5 @@
 import os
+import thread
 import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -6,6 +7,7 @@ from datetime import datetime, timedelta
 from flask import Flask, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bcrypt import Bcrypt
+import requests
 from threading import Lock
 
 app = Flask(__name__)
@@ -66,10 +68,51 @@ def validate_session(session):
 	return session.user
 
 ##########################
+# Utility function to    #
+# add a log message      #
+##########################
+def add_log(logType, message, extra={}):
+	data = {
+		'message': message
+	}
+
+	if extra:
+		data.update(extra)
+
+	log = models.Log(logType, data)
+
+	try:
+		db.session.add(log)
+		db.session.commit()
+	except Exception as e:
+		print e
+
+##########################
+# Utility function to    #
+# send to slack          #
+##########################
+def send_slack(message, extra={}):
+	thread.start_new_thread(send_slack_actual, (message, extra))
+
+def send_slack_actual(message, extra):
+	# Do nothing if this isn't configured
+	if 'SLACK_POST_URI' not in app.config:
+		return
+
+	payload = {
+		'text': message,
+		'link_names': 1
+	}
+
+	if extra:
+		payload.update(extra)
+
+	requests.post(app.config['SLACK_POST_URI'], json=payload)
+
+##########################
 # Clear out all sessions #
 # that are 15 minutes old#
 ##########################
-
 @scheduler.scheduled_job('cron', id='cleanup_sessions', second=0)
 def cleanup_sessions():
 	print "[CRON] Cleaning up sessions..."

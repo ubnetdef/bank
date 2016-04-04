@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from json import dump
+from json import dumps
 
 class User(db.Model):
 	__tablename__ = 'users'
@@ -60,8 +60,14 @@ class Transaction(db.Model):
 	__tablename__ = 'transactions'
 
 	id = db.Column(db.Integer, primary_key=True)
-	src = db.Column(db.String(10))
-	dst = db.Column(db.String(10))
+	
+	""" Link to the account table """
+	srcAccount = db.Column(db.String(10), db.ForeignKey('accounts.id'))
+	src = db.relationship('Account', 
+		foreign_keys=[srcAccount])
+	dstAccount = db.Column(db.String(10), db.ForeignKey('accounts.id'))
+	dst = db.relationship('Account', 
+		foreign_keys=[dstAccount])
 	amount = db.Column(db.Float)
 	time = db.Column(db.DateTime)
 
@@ -75,11 +81,11 @@ class Log(db.Model):
 	__tablename__ = 'logs'
 
 	id = db.Column(db.Integer, primary_key=True)
-	type = db.Column(db.Integer)
+	logType = db.Column(db.Integer)
 	time = db.Column(db.DateTime)
 	data = db.Column(db.Text)
 
-	def __init__(self, type, data=None):
-		self.type = type
+	def __init__(self, logType, data):
+		self.logType = logType
 		self.time = datetime.utcnow()
-		self.data = dump(data)
+		self.data = dumps(data)

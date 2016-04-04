@@ -7,3 +7,5 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 THREADS_PER_PAGE = 8
+
+SLACK_POST_URI = 'https://hooks.slack.com/services/XXX/XXX/XXXX'
