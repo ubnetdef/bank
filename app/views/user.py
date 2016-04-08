@@ -162,19 +162,23 @@ def changePin():
 	is waived
 	"""
 	try:
-		check_params(request, ["session", "account","pin"])
+		check_params(request, ["session", "account","pin", "newpin"])
 		user = validate_session(request.form["session"])
 	except StandardError as e:
 		return respond(str(e), code=400), 400
 
 	accountNum = str(request.form["account"])
 	pin = int(request.form["pin"])
+	newpin = int(request.form["newpin"])
 	account = Account.query.filter(Account.id == accountNum).first()
 
-	if (account.user is not user and not user.is_staff) or (not account):
+	if (account.user != user and not user.is_staff) or (not account):
 		return respond("Unknown or invalid account number", code=400), 400
 
-	account.pin = pin
+	if int(account.pin) != pin and not user.is_staff:
+		return respond("Invalid current account pin", code=400), 400
+
+	account.pin = newpin
 
 	try:
 		db.session.commit()

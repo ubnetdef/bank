@@ -129,7 +129,7 @@ def transfers():
 	if not account:
 		return respond("Unknown or invalid account number", code=400), 400
 
-	transactions = Transaction.query.filter(or_(Transaction.src == account, Transaction.dst == account)).all()
+	transactions = Transaction.query.filter(or_(Transaction.src == account, Transaction.dst == account)).order_by(Transaction.time.desc()).all()
 	cleanTransactions = []
 
 	for t in transactions:
