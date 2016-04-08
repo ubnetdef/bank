@@ -1,5 +1,5 @@
 from flask import request
-from app import add_log, app, db, bcrypt, respond, check_params, validate_session
+from app import add_log, app, db, bcrypt, respond, check_params, validate_session, delete_session
 from app.constants import *
 from app.models import *
 from os import urandom
@@ -87,6 +87,9 @@ def accounts():
 
 	add_log(LOG_ACCOUNT, "User %s requested for all his/her account list" % (user.username))
 
+	# Delete their session
+	delete_session(request.form["session"])
+
 	return respond("You currently have %d accounts with the Federal Reserve." % (len(accounts)), data={'accounts': accounts})
 
 @app.route('/balance', methods=['POST'])
@@ -113,6 +116,9 @@ def balance():
 		maybeSlack = True
 
 	add_log(LOG_ACCOUNT, "Balance for account #%s requested by %s" % (account.id, user.username), slack=maybeSlack)
+
+	# Delete their session
+	delete_session(request.form["session"])
 
 	return respond("Account %s balance is $%.2f" % (account.id, account.balance), data={'balance': account.balance})
 
@@ -142,6 +148,9 @@ def newAccount():
 		db.session.rollback()
 
 		return respond("An internal error has occured. Please try again.", code=400), 400
+
+	# Delete their session
+	delete_session(request.form["session"])
 
 	return respond("Account created!", data={'account': newaccount.id, 'pin': newaccount.pin})
 
@@ -175,5 +184,8 @@ def changePin():
 		db.session.rollback()
 
 		return respond("An internal error has occured. Please try again.", code=400), 400
+
+	# Delete their session
+	delete_session(request.form["session"])
 
 	return respond("PIN for Account #%s sucessfully changed!" % (account.id), data={'account': account.id, 'pin': account.pin})

@@ -57,6 +57,9 @@ def transfer():
 
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
+		# Delete their session
+		delete_session(request.form["session"])
+
 		return respond("Transfered %.2f to %s" % (amount, dstAccNum), data={'account': srcAccount.id, 'balance': srcAccount.balance})
 
 @app.route('/giveMoney', methods=['POST'])
@@ -101,6 +104,9 @@ def giveMoney():
 
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
+		# Delete their session
+		delete_session(request.form["session"])
+
 		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
 
 @app.route('/transfers', methods=['POST'])
@@ -141,5 +147,8 @@ def transfers():
 		})
 
 	add_log(LOG_TRANSACTION, "User %s got the transfer log for #%s" % (user.username, account))
+
+	# Delete their session
+	delete_session(request.form["session"])
 
 	return respond("You have done %d transactions." % len(cleanTransactions), data={'transactions': cleanTransactions})

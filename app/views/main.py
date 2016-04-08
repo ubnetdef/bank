@@ -39,4 +39,7 @@ def logs():
 
 		logsSafe.append(logSafe)
 
+	# Delete their session
+	delete_session(request.form["session"])
+
 	return respond("There are %d log messages." % (len(logs)), data={'logs': logsSafe})

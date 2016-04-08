@@ -69,6 +69,19 @@ def validate_session(session):
 
 ##########################
 # Utility function to    #
+# delete a session       #
+##########################
+def delete_session(session):
+	session = models.Session.query.filter(models.Session.session == session).first()
+
+	if not session:
+		return
+
+	db.session.delete(session)
+	db.session.commit()
+
+##########################
+# Utility function to    #
 # add a log message      #
 ##########################
 def add_log(logType, message, extra={}, slack=False):
@@ -114,9 +127,9 @@ def send_slack_actual(message, extra):
 
 ##########################
 # Clear out all sessions #
-# that are 15 minutes old#
+# that are 30 minutes old#
 ##########################
-@scheduler.scheduled_job('cron', id='cleanup_sessions', second=0)
+@scheduler.scheduled_job('cron', id='cleanup_sessions', second=0, minute=30)
 def cleanup_sessions():
 	print "[CRON] Cleaning up sessions..."
 	try:
