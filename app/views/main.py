@@ -1,5 +1,5 @@
 from flask import request
-from app import add_log, app, db, respond, check_params, validate_session
+from app import add_log, app, db, respond, check_params, validate_session, delete_session
 from app.models import Log
 from json import loads
 
