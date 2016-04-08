@@ -135,7 +135,7 @@ def newAccount():
 		return respond(str(e), code=400), 400
 
 	gen = SystemRandom()
-	accnum = str(''.join(map(str, [gen.randrange(9) for i in range(9)])))
+	accnum = str(''.join(map(str, [gen.randrange(9) for i in range(10)])))
 	pin = int(request.form["pin"])
 	newaccount = Account(accnum, user, 0.00, pin)
 	
