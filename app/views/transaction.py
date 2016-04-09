@@ -200,8 +200,8 @@ def transfers():
 
 		cleanTransactions.append({
 			'type': tType,
-			'dst': t.dst.id,
-			'src': t.src.id,
+			'dst': t.dstAccount,
+			'src': t.srcAccount,
 			'amount': t.amount,
 			'time': t.time,
 		})
