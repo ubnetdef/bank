@@ -157,14 +157,11 @@ def internalGiveMoney():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "Gave $%.2f to %s" % (amount, dstAccountNum))
+			add_log(LOG_TRANSACTION, "Gave $%.2f to %s for service uptime check" % (amount, dstAccountNum))
 		except:
 			db.session.rollback()
 
 			return respond("An internal error has occured. Please try again.", code=400), 400
-
-		# Delete their session
-		delete_session(request.form["session"])
 
 		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
 
