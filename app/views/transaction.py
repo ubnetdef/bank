@@ -1,4 +1,4 @@
-from config import TEAM_ACCOUNT_MAPPINGS
+from config import TEAM_ACCOUNT_MAPPINGS, WHITE_TEAM_ACCOUNT
 from flask import request
 from sqlalchemy import or_
 from app import add_log, app, bcrypt, db, lock, respond, check_params, validate_session, delete_session
@@ -203,7 +203,7 @@ def transfers():
 			'time': t.time,
 		})
 
-	add_log(LOG_TRANSACTION, "User %s got the transfer log for #%s" % (user.username, account))
+	add_log(LOG_TRANSACTION, "User %s got the transfer log for #%s" % (user.username, account.username))
 
 	# Delete their session
 	delete_session(request.form["session"])
