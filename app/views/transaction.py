@@ -1,7 +1,7 @@
 from config import TEAM_ACCOUNT_MAPPINGS
 from flask import request
 from sqlalchemy import or_
-from app import add_log, app, db, lock, respond, check_params, validate_session, delete_session
+from app import add_log, app, bcrypt, db, lock, respond, check_params, validate_session, delete_session
 from app.constants import *
 from app.models import *
 
