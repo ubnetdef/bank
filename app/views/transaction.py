@@ -1,3 +1,4 @@
+from config import TEAM_ACCOUNT_MAPPINGS
 from flask import request
 from sqlalchemy import or_
 from app import add_log, app, db, lock, respond, check_params, validate_session, delete_session
@@ -98,7 +99,7 @@ def giveMoney():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s" % (user.username, amount, dstAccNum), slack=True)
+			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s" % (user.username, amount, dstAccountNum), slack=True)
 		except:
 			db.session.rollback()
 
@@ -108,6 +109,65 @@ def giveMoney():
 		delete_session(request.form["session"])
 
 		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
+
+@app.route('/internalGiveMoney', methods=['POST'])
+def internalGiveMoney():
+	"""
+	Like giveMoney, but done through the scoring engine.
+	"""
+	try:
+		check_params(request, ["username", "password","team"])
+	except StandardError as e:
+		return respond(str(e), code=400), 400
+
+	# amount to give per check
+	amount = 100
+
+	username = str(request.form["username"])
+	password = str(request.form["password"])
+	team = int(request.form["team"])
+
+	# Check team mappings
+	if team not in TEAM_ACCOUNT_MAPPINGS:
+		return respond("Bad.", code=400), 400
+
+	dstAccountNum = TEAM_ACCOUNT_MAPPINGS[team]
+
+	user = User.query.filter(User.username == username).first()
+	if user == None or not bcrypt.check_password_hash(user.password, password):
+		return respond("Unknown or invalid username/password", code=400), 400
+
+	if not user.is_staff:
+		return respond("Bad. Go away.", code=403), 403
+
+	with lock:
+		# Grab the dst account
+		dstAccount = Account.query.filter(Account.id == dstAccountNum).first()
+		if not dstAccount:
+			return respond("Unknown or invalid destination account number", code=400), 400
+
+		# Update the balance!
+		dstAccount.balance += amount
+
+		# Create the transaction
+		srcAccount = Account.query.filter(Account.id == WHITE_TEAM_ACCOUNT).first()
+		transaction = Transaction(srcAccount, dstAccount, amount)
+
+		try:
+			db.session.add(transaction)
+			db.session.commit()
+
+			add_log(LOG_TRANSACTION, "Gave $%.2f to %s" % (amount, dstAccountNum))
+		except:
+			db.session.rollback()
+
+			return respond("An internal error has occured. Please try again.", code=400), 400
+
+		# Delete their session
+		delete_session(request.form["session"])
+
+		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
+
 
 @app.route('/transfers', methods=['POST'])
 def transfers():
