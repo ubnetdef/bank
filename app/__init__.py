@@ -146,4 +146,6 @@ def cleanup_sessions():
 		print "[CRON] Failure - rollback triggered"
 
 # Grab all the views
-from app.views import *
+from app.views.main import *
+from app.views.transaction import *
+from app.views.user import *

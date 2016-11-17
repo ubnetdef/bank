@@ -203,7 +203,7 @@ def transfers():
 			'time': t.time,
 		})
 
-	add_log(LOG_TRANSACTION, "User %s got the transfer log for #%s" % (user.username, account.username))
+	add_log(LOG_TRANSACTION, "User %s got the transfer log for #%s" % (user.username, account.id))
 
 	# Delete their session
 	delete_session(request.form["session"])
