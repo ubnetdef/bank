@@ -52,7 +52,7 @@ def transfer():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "User %s transferred $%.2f from #%s to #%s" % (user.username, amount, srcAccNum, dstAccNum), slack=True)
+			add_log(LOG_TRANSACTION, "User %s transferred $%.2f from #%s to %s (#%s)" % (user.username, amount, srcAccNum, dstAccount.user.username, dstAccNum), slack=True)
 		except:
 			db.session.rollback()
 
@@ -99,7 +99,7 @@ def giveMoney():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s" % (user.username, amount, dstAccountNum), slack=True)
+			add_log(LOG_TRANSACTION, "User %s gave $%.2f to %s (%s)" % (user.username, amount, dstAccount.user.username, dstAccountNum), slack=True)
 		except:
 			db.session.rollback()
 
@@ -157,7 +157,7 @@ def internalGiveMoney():
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "Gave $%.2f to %s for service uptime check" % (amount, dstAccountNum))
+			add_log(LOG_TRANSACTION, "Gave $%.2f to %s (%s) for service uptime check" % (amount, dstAccount.user.username, dstAccountNum))
 		except:
 			db.session.rollback()
 
