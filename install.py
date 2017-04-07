@@ -9,16 +9,16 @@ try:
 	db.create_all()
 
 	# Create the general staff user
-	hashpw = bcrypt.generate_password_hash("lockdown_staffpw")
+	hashpw = bcrypt.generate_password_hash("staff")
 	user = User("staff", hashpw, is_staff=True)
-	account_main = Account("0000001337", user, balance=1000000000.00, pin=1426180)
+	account_main = Account("1000000000", user, balance=1000000000.00, pin=1234)
 	db.session.add(user)
 	db.session.add(account_main)
 
 	# Create the scoring engine user
-	hashpw = bcrypt.generate_password_hash("9815405C45D69BA8E252")
+	hashpw = bcrypt.generate_password_hash("scoring")
 	user = User("scoring", hashpw, is_staff=True)
-	account_main = Account("3141592653", user, balance=0.00, pin=917889)
+	account_main = Account("2000000000", user, balance=0.00, pin=1234)
 	db.session.add(user)
 	db.session.add(account_main)
 
@@ -49,9 +49,5 @@ try:
 		db.session.add(account_main)
 	
 	db.session.commit()
-
-	print "BankAPI\n"
-	print "Username: admin\nPassword: admin\n"
-	print "Account: %s\nBalance: %.2f\nPIN: %d" % (account_main.id, account_main.balance, account_main.pin)
 except Exception as e:
 	print "Error: %s" % (e)
