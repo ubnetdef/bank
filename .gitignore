@@ -4,6 +4,7 @@ venv
 app.db
 app.pid
 config.py
+logs/
 
 # Python #
 ##########
