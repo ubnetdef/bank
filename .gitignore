@@ -2,7 +2,8 @@
 #################################################
 venv
 app.db
-#config.py
+app.pid
+config.py
 
 # Python #
 ##########

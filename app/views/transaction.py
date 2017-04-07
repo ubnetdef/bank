@@ -1,4 +1,4 @@
-from config import TEAM_ACCOUNT_MAPPINGS, WHITE_TEAM_ACCOUNT
+from config import TEAM_ACCOUNT_MAPPINGS, WHITE_TEAM_ACCOUNT, AMOUNT_PER_SERVICE_UP
 from flask import request
 from sqlalchemy import or_
 from app import add_log, app, bcrypt, db, lock, respond, check_params, validate_session, delete_session
@@ -120,9 +120,6 @@ def internalGiveMoney():
 	except StandardError as e:
 		return respond(str(e), code=400), 400
 
-	# amount to give per check
-	amount = 100
-
 	username = str(request.form["username"])
 	password = str(request.form["password"])
 	team = int(request.form["team"])
@@ -147,23 +144,23 @@ def internalGiveMoney():
 			return respond("Unknown or invalid destination account number", code=400), 400
 
 		# Update the balance!
-		dstAccount.balance += amount
+		dstAccount.balance += AMOUNT_PER_SERVICE_UP
 
 		# Create the transaction
 		srcAccount = Account.query.filter(Account.id == WHITE_TEAM_ACCOUNT).first()
-		transaction = Transaction(srcAccount, dstAccount, amount)
+		transaction = Transaction(srcAccount, dstAccount, AMOUNT_PER_SERVICE_UP)
 
 		try:
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "Gave $%.2f to %s (%s) for service uptime check" % (amount, dstAccount.user.username, dstAccountNum))
+			add_log(LOG_TRANSACTION, "Gave $%.2f to %s (%s) for service uptime check" % (AMOUNT_PER_SERVICE_UP, dstAccount.user.username, dstAccountNum))
 		except:
 			db.session.rollback()
 
 			return respond("An internal error has occured. Please try again.", code=400), 400
 
-		return respond("Transfered %.2f to %s" % (amount, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
+		return respond("Transfered %.2f to %s" % (AMOUNT_PER_SERVICE_UP, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
 
 
 @app.route('/transfers', methods=['POST'])
