@@ -27,6 +27,7 @@ def transfer():
 		return respond("Funny guy, eh?", code=400), 400
 
 	if amount <= 0:
+		add_log(LOG_HACKING, "User %s tried to hack the BankAPI by sending negative amounts." % (user.username), slack=True)
 		return respond("Trying to break the bank, eh? That's a paddlin.", code=400), 400
 
 	with lock:
