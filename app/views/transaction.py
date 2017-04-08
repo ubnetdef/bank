@@ -26,6 +26,9 @@ def transfer():
 	if pin <= 0:
 		return respond("Funny guy, eh?", code=400), 400
 
+	if amount <= 0:
+		return respond("gg no re", code=400), 400
+
 	with lock:
 		# First get the source account
 		srcAccount = Account.query.filter(Account.user == user, Account.id == srcAccNum, Account.pin == pin).first()
@@ -81,6 +84,9 @@ def giveMoney():
 
 	if not user.is_staff:
 		return respond("Bad. Go away.", code=403), 403
+
+	if amount <= 0:
+		return respond("gg no re", code=400), 400
 
 	with lock:
 		# Grab the dst account
