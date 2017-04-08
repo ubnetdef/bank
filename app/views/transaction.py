@@ -27,7 +27,7 @@ def transfer():
 		return respond("Funny guy, eh?", code=400), 400
 
 	if amount <= 0:
-		return respond("gg no re", code=400), 400
+		return respond("Trying to break the bank, eh? That's a paddlin.", code=400), 400
 
 	with lock:
 		# First get the source account
@@ -86,7 +86,7 @@ def giveMoney():
 		return respond("Bad. Go away.", code=403), 403
 
 	if amount <= 0:
-		return respond("gg no re", code=400), 400
+		return respond("Trying to break the bank, eh? That's a paddlin.", code=400), 400
 
 	with lock:
 		# Grab the dst account
