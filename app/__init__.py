@@ -111,19 +111,19 @@ def send_slack(message, extra={}):
 	thread.start_new_thread(send_slack_actual, (message, extra))
 
 def send_slack_actual(message, extra):
-	# Do nothing if this isn't configured
-	if 'SLACK_POST_URI' not in app.config:
+	if not app.config['SLACK_ENABLED']:
 		return
 
 	payload = {
-		'text': message,
-		'link_names': 1
+		'token': app.config['SLACK_APIKEY'],
+		'channel': app.config['SLACK_CHANNEL']
+		'text': message
 	}
 
 	if extra:
 		payload.update(extra)
 
-	requests.post(app.config['SLACK_POST_URI'], json=payload)
+	requests.post('https://slack.com/api/chat.postMessage', data=payload)
 
 ##########################
 # Clear out all sessions #
