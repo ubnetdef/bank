@@ -116,7 +116,7 @@ def send_slack_actual(message, extra):
 
 	payload = {
 		'token': app.config['SLACK_APIKEY'],
-		'channel': app.config['SLACK_CHANNEL']
+		'channel': app.config['SLACK_CHANNEL'],
 		'text': message
 	}
 

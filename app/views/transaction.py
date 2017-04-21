@@ -135,7 +135,7 @@ def internalGiveMoney():
 	if team not in TEAM_ACCOUNT_MAPPINGS:
 		return respond("Bad.", code=400), 400
 
-	dstAccountNum = TEAM_ACCOUNT_MAPPINGS[team]
+	dstAccountNum = TEAM_ACCOUNT_MAPPINGS[team].id
 
 	user = User.query.filter(User.username == username).first()
 	if user == None or not bcrypt.check_password_hash(user.password, password):
