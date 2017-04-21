@@ -2,7 +2,6 @@
 ###############  DO NOT EDIT THIS SECTION!  ###############
 ###########################################################
 import os
-_basedir = os.path.abspath(os.path.dirname(__file__))
 
 class User:
 	def __init__(self, username, password, staff, account, balance):
@@ -25,7 +24,7 @@ DEBUG = True
 THREADS_PER_PAGE = 8
 
 # Database Configuration
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(_basedir, "app.db")
+SQLALCHEMY_DATABASE_URI = "mysql://user:pass@localhost:3306/bank"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Slack Configuration
