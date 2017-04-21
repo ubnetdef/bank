@@ -2,7 +2,6 @@
 import config
 from app import bcrypt, db
 from app.models import *
-from random import SystemRandom
 
 try:
 	# Initalize DB
