@@ -12,7 +12,7 @@ This is a bank component that integrates with UB Network Defense's [Inject Engin
 2. Run ```pip install -r requirements.txt```
 3. Run ```cp config_sample.py config.py```, and edit the file
 4. Run ```python setup.py```
-6. You're done! When you wish to run 
+6. You're done!
 
 ## How to use
 Simply run ```./run.sh```, and hope for the best
