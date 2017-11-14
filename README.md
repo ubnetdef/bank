@@ -1,11 +1,18 @@
 Lockdown: Bank API
 ========
 
-This is the Bank API developed by UB Network Defense for the [Lockdown](https://lockdown.ubnetdef.org) competitions.
+This is a bank component that integrates with UB Network Defense's [Inject Engine - ie2](https://github.com/ubnetdef/ie2) and [ScoreEngine](https://github.com/ubnetdef/scoreengine). This application provides a simple API to handle bank transactions
 
-1. git clone https://github.com/ubnetdef/bank-api.git
-2. pip install -r requirements.txt
-3. cp config_sample.py config.py
-4. nano config.py #and edit it
-5. python setup.py
-6. ./run.sh
+## Requirements
+* Python 2.7
+* git
+
+## Installation
+1. Clone this repository 
+2. Run ```pip install -r requirements.txt```
+3. Run ```cp config_sample.py config.py```, and edit the file
+4. Run ```python setup.py```
+6. You're done! When you wish to run 
+
+## How to use
+Simply run ```./run.sh```, and hope for the best
