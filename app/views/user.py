@@ -178,6 +178,9 @@ def changePin():
 	if int(account.pin) != pin and not user.is_staff:
 		return respond("Invalid current account pin", code=400), 400
 
+	if len(pin) > 10:
+		return respond("Max PIN length is 10", code=400), 400
+
 	account.pin = newpin
 
 	try:

@@ -48,7 +48,7 @@ class Account(db.Model):
 		backref=db.backref('accounts', lazy='dynamic'))
 
 	balance = db.Column(db.Float)
-	pin = db.Column(db.String)
+	pin = db.Column(db.String(10))
 
 	def __init__(self, id, user, balance=0.00, pin=0000):
 		self.id = id
