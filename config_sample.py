@@ -1,8 +1,6 @@
 ###########################################################
 ###############  DO NOT EDIT THIS SECTION!  ###############
 ###########################################################
-import os
-
 class User:
 	def __init__(self, username, password, staff, account, balance):
 		self.username = username
@@ -36,6 +34,10 @@ SLACK_CHANNEL = "#bank"
 AMOUNT_PER_SERVICE_UP = 100
 WHITE_TEAM_ACCOUNT = "3141592653"
 TEAM_ACCOUNT_MAPPINGS = {
+	# Format:
+	# TeamNumber: Account("AccountNumber", "PIN")
+	# AccountNumber must be 10 characters long
+	# PIN can be a max of 10 characters
 	1: Account("0000000001", "0000"),
 	2: Account("0000000002", "0000"),
 	3: Account("0000000003", "0000"),
@@ -53,14 +55,22 @@ TEAM_INITIAL_MONEY = 85000.00
 
 # Account Configuration
 ACCOUNTS = [
-	User("staff", "staff", True, Account(WHITE_TEAM_ACCOUNT, "1234"), 1000000000.00),
-	User("scoring", "scoring", True, Account("2000000000", "1234"), 0.0),
-]
+	# Format:
+	# User(username, password, is staff, account(account number, pin), balance)
 
-###########################################################
-###############  DO NOT EDIT THIS SECTION!  ###############
-###########################################################
-# Build the rest of the accounts
-for teamnum, account in TEAM_ACCOUNT_MAPPINGS.items():
-	userpass = "team{}".format(teamnum)
-	ACCOUNTS.append(User(userpass, userpass, False, account, TEAM_INITIAL_MONEY))
+	# Staff/White Team account
+	User("staff", "staff", True, Account(WHITE_TEAM_ACCOUNT, "1234"), 1000000000.00),
+
+	# Scoring account. Used to transfer money from. Note, this doesn't need a balance,
+	# it's just here so the 'transaction' comes from an account, and not out of no
+	# where
+	User("scoring", "scoring", True, Account("2000000000", "1234"), 0.0),
+
+	# Now create the team accounts. You should basically copy and paste the following
+	# line, except change the 'username' and 'password' field. Also replace the 'X' in
+	# "TEAM_ACCOUNT_MAPPINGS[X]" with the team number.
+	#
+	# Example for team #3: User("team3", "team3spassword", False, TEAM_ACCOUNT_MAPPINGS[3], TEAM_INITIAL_MONEY) 
+	#
+	# User("username", "password", False, TEAM_ACCOUNT_MAPPINGS[X], TEAM_INITIAL_MONEY)
+]

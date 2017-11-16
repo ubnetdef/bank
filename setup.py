@@ -18,6 +18,9 @@ try:
 			user,
 			account
 		])
+
+		print('Created Account: Username: {} // Password: {} // Staff: {} // Account: {} // PIN: {} // Balance: {}'.format(
+			u.username, u.password, u.staff, u.account.id, u.account.pin, u.balance))
 	
 	db.session.commit()
 except Exception as e:
