@@ -34,7 +34,7 @@ def transfer():
 		# First get the source account
 		srcAccount = Account.query.filter(Account.user == user, Account.id == srcAccNum, Account.pin == pin).first()
 		if not srcAccount:
-			return respond("Unknown or invalid source account number", code=400), 400
+			return respond("Source account number or PIN is incorrect", code=400), 400
 
 		# Does the source account have the money?
 		if srcAccount.balance < amount:
@@ -43,7 +43,7 @@ def transfer():
 		# Now get the dst account
 		dstAccount = Account.query.filter(Account.id == dstAccNum).first()
 		if not dstAccount:
-			return respond("Unknown or invalid destination account number", code=400), 400
+			return respond("Invalid destination account number", code=400), 400
 
 		# Now update!
 		srcAccount.balance -= amount
@@ -93,7 +93,7 @@ def giveMoney():
 		# Grab the dst account
 		dstAccount = Account.query.filter(Account.id == dstAccountNum).first()
 		if not dstAccount:
-			return respond("Unknown or invalid destination account number", code=400), 400
+			return respond("Invalid destination account number", code=400), 400
 
 		# Update the balance!
 		dstAccount.balance += amount
@@ -148,7 +148,7 @@ def internalGiveMoney():
 		# Grab the dst account
 		dstAccount = Account.query.filter(Account.id == dstAccountNum).first()
 		if not dstAccount:
-			return respond("Unknown or invalid destination account number", code=400), 400
+			return respond("Invalid destination account number", code=400), 400
 
 		# Update the balance!
 		dstAccount.balance += AMOUNT_PER_SERVICE_UP
@@ -188,7 +188,7 @@ def transfers():
 	account = Account.query.filter(Account.user == user, Account.id == accountNum).first()
 
 	if not account:
-		return respond("Unknown or invalid account number", code=400), 400
+		return respond("Invalid account number", code=400), 400
 
 	transactions = Transaction.query.filter(or_(Transaction.src == account, Transaction.dst == account)).order_by(Transaction.time.desc()).all()
 	cleanTransactions = []
