@@ -129,7 +129,18 @@ def internalGiveMoney():
 
 	username = str(request.form["username"])
 	password = str(request.form["password"])
-	team = int(request.form["team"])
+
+	try:
+		team = int(request.form["team"])
+	except ValueError:
+		return respond("Team must be an integer.", code=400), 400
+
+	try:
+		multiplier = int(request.form.get("multiplier", 1))
+	except ValueError:
+		return respond("Multiplier must be an integer.", code=400), 400
+	if multiplier < 1:
+		return respond("Multiplier must be at least 1.", code=400), 400
 
 	# Check team mappings
 	if team not in TEAM_ACCOUNT_MAPPINGS:
@@ -144,6 +155,8 @@ def internalGiveMoney():
 	if not user.is_staff:
 		return respond("Bad. Go away.", code=403), 403
 
+	balance_increase = AMOUNT_PER_SERVICE_UP * multiplier
+
 	with lock:
 		# Grab the dst account
 		dstAccount = Account.query.filter(Account.id == dstAccountNum).first()
@@ -151,23 +164,23 @@ def internalGiveMoney():
 			return respond("Invalid destination account number", code=400), 400
 
 		# Update the balance!
-		dstAccount.balance += AMOUNT_PER_SERVICE_UP
+		dstAccount.balance += balance_increase
 
 		# Create the transaction
 		srcAccount = Account.query.filter(Account.id == WHITE_TEAM_ACCOUNT).first()
-		transaction = Transaction(srcAccount, dstAccount, AMOUNT_PER_SERVICE_UP)
+		transaction = Transaction(srcAccount, dstAccount, balance_increase)
 
 		try:
 			db.session.add(transaction)
 			db.session.commit()
 
-			add_log(LOG_TRANSACTION, "Gave $%.2f to %s (%s) for service uptime check" % (AMOUNT_PER_SERVICE_UP, dstAccount.user.username, dstAccountNum))
+			add_log(LOG_TRANSACTION, "Gave $%.2f to %s (%s) for service uptime check" % (balance_increase, dstAccount.user.username, dstAccountNum))
 		except:
 			db.session.rollback()
 
-			return respond("An internal error has occured. Please try again.", code=400), 400
+			return respond("An internal error has occurred. Please try again.", code=400), 400
 
-		return respond("Transfered %.2f to %s" % (AMOUNT_PER_SERVICE_UP, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
+		return respond("Transferred %.2f to %s" % (balance_increase, dstAccountNum), data={'account': dstAccount.id, 'balance': dstAccount.balance})
 
 
 @app.route('/transfers', methods=['POST'])
